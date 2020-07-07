@@ -43,6 +43,6 @@ fetch
 
 cd $DIR
 jq '.data.rows' * | jq -s add > all.json
-jq 'unique_by(.SHIPNAME)' > deduped.json
+jq 'unique_by(.SHIPNAME)' all.json > deduped.json
 
-curl -X POST -H "Content-Type: application/json" https://d0042529.daizy.io/aisdata --data @deduped.json
+curl -X POST -o /dev/null -H "Content-Type: application/json" https://d0042529.daizy.io/aisdata --data @deduped.json
