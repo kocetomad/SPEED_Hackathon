@@ -21,14 +21,14 @@ def getarchive( uri, filename ):
             print('no values failed.')
     else :
         
-        print('No File GET - ' + archive +  datestr + '/' + filename)
-        r = requests.get(url, allow_redirects=True)
+        print('No File GET - ', uri)
+        r = requests.get(uri, allow_redirects=True)
         if (r.status_code != 200):
-            open(filename, 'wb').write('')
-            print('no values failed.')
+            open(filename, 'wb').write(r.content)
+            print('No remote archive failed.')
         else :
             open(filename, 'wb').write(r.content)
-        more = r.contents()
+        more = r.content
     return more
 
 def getsensorsinarea(glat, glong, dist=10 ):
@@ -47,7 +47,7 @@ def getsensorsinarea(glat, glong, dist=10 ):
     # extract locations
     # locs = pd.DataFrame(df['location'].tolist())
     
-    # Calculate distance to latslong
+    # Calculate distance to latlong from km to deg
     deglat = 111 # km
     deglong = 85 # km (approx for europe)
     deglatr = dist / deglat
@@ -56,9 +56,11 @@ def getsensorsinarea(glat, glong, dist=10 ):
     glatS = glat - deglatr
     glongW = glong - deglongr
     glongE = glong + deglongr
-    print('longr = '+ str(deglongr) +' :::: longE = ' + str(glongE) + " : longW = " + str(glongW))
-    print('latr = ' + str(deglatr)+ ' :::: latN = ' + str(glatN) + " : latS = " + str(glatS))   
+    # this is the bounds of teh sensors to find. 
+    #print('longr = '+ str(deglongr) +' :::: longE = ' + str(glongE) + " : longW = " + str(glongW))
+    #print('latr = ' + str(deglatr)+ ' :::: latN = ' + str(glatN) + " : latS = " + str(glatS))   
     
+    ##
     df['location.latitude'] = df['location.latitude'].astype(float) 
     df['location.longitude'] = pd.to_numeric(df['location.longitude'], errors='coerce')
     
@@ -78,14 +80,14 @@ def gettemporalreadings(tbegin, tend, sensors):
     day = pd.to_datetime(tbegin)
     dayend = pd.to_datetime(tend)
     while (day < dayend):
-        sensortype = 'SDS011'
         datestr = day.to_pydatetime().strftime('%Y-%m-%d')
-        for sensor in sensors.itertuples():
-            filename = datestr + '_' + sensor['sensor.sensor_type.name'] + '_sensor_' + sensor['location.id'] + '.csv'
+        for id ,sensor in sensors.iterrows():
+            filename = datestr + '_' + sensor['sensor.sensor_type.name'].lower() + '_sensor_' + str(sensor['location.id']) + '.csv'
             uri = archive +  datestr + '/' + filename
-            #print(sensor)
+            #print(sensor['location.indoor'])
             print(uri)
-            # getarchive(uri, filename)
+            # Use this to get the archive, it will backup to a local copy.
+            #print(getarchive(uri, filename))
         
         day=day+pd.DateOffset(days=1)
     print('done')
