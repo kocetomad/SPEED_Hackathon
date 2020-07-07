@@ -47,6 +47,7 @@ def getsensorsinarea(glat, glong, dist=10 ):
     filename = 'data.24h.json'
     uri = 'https://data.sensor.community/static/v2/' + filename
     archive = getarchive(uri,filename)
+    print(archive)
     if (archive == filename):
         with open(filename) as hourjson:
             data = json.load(hourjson)
@@ -89,32 +90,30 @@ def gettemporalreadings(tbegin, tend, sensors):
     # the sensors
     day = pd.to_datetime(tbegin)
     dayend = pd.to_datetime(tend)
+    
     sds011files = []
     dht22files = []
     bme280files = []
-
     while (day < dayend):
         datestr = day.to_pydatetime().strftime('%Y-%m-%d')
-        for id ,sensor in sensors.iterrows():
+        for id , sensor in sensors.iterrows():
             if sensor['location.indoor']:
                 indoor = '_indoor'
             else:
                 indoor = ''
             filename = datestr + '_' + sensor['sensor.sensor_type.name'].lower() + '_sensor_' +  str(sensor['sensor.id']) + indoor + '.csv'
             uri = archive +  datestr + '/' + filename
-            
+                    
             archivefile = getarchive(uri, filename)
             if archivefile != '':
                 if sensor['sensor.sensor_type.name'] == 'SDS011':
                     sds011files.append(archivefile)
                 elif sensor['sensor.sensor_type.name'] == 'DHT22':
-
                     dht22files.append(archivefile)
                 elif sensor['sensor.sensor_type.name'] == 'BME280':
                     bme280files.append(archivefile)
         day=day+pd.DateOffset(days=1)
 
-    #print(datafiles)
     read_csv = lambda x: pd.read_csv(x , sep=';')  
     sds011data = pd.concat(map(read_csv, sds011files))
     dht22data = pd.concat(map(read_csv, dht22files))
@@ -133,11 +132,13 @@ def main():
     gdist = 10 # km 1/2 length of bounding square
     
     startdate = '2020-02-10'
-    enddate = '2020-01-19'
+    enddate = '2020-02-19'
 
+    # get sensors in area
     sensors = getsensorsinarea(glat,glong,gdist)
-    sensordataframes = gettemporalreadings('2020-02-10', '2020-02-20', sensors)
-
+    # get dataframes of data from server
+    sensordataframes = gettemporalreadings(startdate, enddate, sensors)
+    print(sensordataframes)
 # executes when your script is called from the command-line
 if __name__ == "__main__":
 
