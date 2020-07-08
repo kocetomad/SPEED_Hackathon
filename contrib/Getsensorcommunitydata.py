@@ -122,6 +122,12 @@ def gettemporalreadings(tbegin, tend, sensors):
     
     return (sds011data, dht22data, bme280data)
 
+def getData(dstart, dend, glat, glong, gdist=10):
+    sensors = getsensorsinarea(glat,glong,gdist)
+    # get dataframes of data from server
+    sensordataframes = gettemporalreadings(dstart, dend, sensors)
+    return sensordataframes
+
 def main():
 
     # WARNING. there is no restriction on this, you could end up collecting 
@@ -135,10 +141,12 @@ def main():
     enddate = '2020-02-19'
 
     # get sensors in area
+
     sensors = getsensorsinarea(glat,glong,gdist)
     # get dataframes of data from server
     sensordataframes = gettemporalreadings(startdate, enddate, sensors)
     print(sensordataframes)
+
 # executes when your script is called from the command-line
 if __name__ == "__main__":
 
