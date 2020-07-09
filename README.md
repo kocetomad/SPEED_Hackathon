@@ -3,17 +3,17 @@
 
 ## Example
 
-flensburg Giermany
-54.7944,9.4481
+flensburg Giermany - 54.7944,9.4481
 
-Have some Geoloc data from that.
+We have wind speed and direction and air quality based on the PM readings, you could check for corrolation between
+we have the time of year and air qulity
+we have the ships location and navigational status we could test for corrolation berween the number of ships unde r way in the vacinity and the pollutuion levels ther may be a way of compensating for wind speed first and then see if the ships pollution has an effect.
 
 ## Data Sources 
 
-* [Weather](Weather)
-* [[AIS]]
-* [Air Quality](Air Quality)
-
+* [Weather](Weather.md)
+* [AIS](AIS.md)
+* [AirQuality](AirQuality.md)
 
 ## Documents
 
